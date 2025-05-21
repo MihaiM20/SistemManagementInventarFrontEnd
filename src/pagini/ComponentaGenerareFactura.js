@@ -82,8 +82,18 @@ class ComponentaGenerareFactura extends React.Component {
       });
 
       if (!response.data.error) {
+        // 1) printează factura
         this.generareFacturaPrint(numeClient, adresa_client, contact_client, this.state.detaliiProdus);
-        // redirect la lista de cereri după facturare
+        // 2) marchează cererea în backend ca „completată”
+        if (this.state.selectedClient) {
+          await APIHandler.actualizareCerereClient(
+            this.state.selectedClient.id,
+           this.state.selectedClient.nume_client,
+            this.state.selectedClient.telefon,
+            this.state.selectedClient.detalii_produs
+          );
+        }
+        // 3) redirect înapoi la lista cererilor
         window.location = '/cerereClient';
       }
     } catch (err) {

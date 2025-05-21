@@ -15,7 +15,8 @@ class ComponentaCerereClient extends React.Component {
     btnMessage: 0,
     sendData: false,
     dateCerereClientList: [],
-    dataLoaded: false
+    dataLoaded: false,
+    completeLoading: false
   }
 
   // legăm corect this și prindem erorile
@@ -64,12 +65,12 @@ class ComponentaCerereClient extends React.Component {
     this.setState({dataLoaded: true});
   }
 
-  async completeazaDetaliiCerereClient (id_client,nume_client, telefon, detalii_produs) {
-    console.log("ID client selectat:", id_client);
-    const dateCerereClient = await APIHandler.actualizareCerereClient(id_client,nume_client, telefon, detalii_produs);
-    console.log(dateCerereClient);
-    this.fetchDateCerereClient()
-}
+  completeazaDetaliiCerereClient = (id_client) => {
+    // setează flag și redirecționează
+    this.setState({ completeLoading: true }, () => {
+      window.location = `/generareFactura?cerereId=${id_client}`;
+    });
+  }
 
   render() {
     const { btnMessage, errorRes, sendData, errorMessage } = this.state;
@@ -200,11 +201,13 @@ class ComponentaCerereClient extends React.Component {
                         <td>{new Date(cerereClient.data_cerere).toLocaleString('ro-RO')}</td>
                         <td>
                           {cerereClient.status==0?(
-                          <button className="btn btn-block btn-warning" onClick={()=>this.completeazaDetaliiCerereClient(cerereClient.id,
-                             cerereClient.nume_client,
-                              cerereClient.telefon,
-                              cerereClient.detalii_produs
-                            )}> Completeaza</button>
+                          <button
+                          className="btn btn-block btn-warning"
+                            onClick={() => this.completeazaDetaliiCerereClient(cerereClient.id)}
+                            disabled={this.state.completeLoading}
+                          >
+                            {this.state.completeLoading ? "Redirecționare..." : "Completează"}
+                          </button>
                           ):(
                             <button className="btn btn-block btn-success"> Completata</button>
                           )}
