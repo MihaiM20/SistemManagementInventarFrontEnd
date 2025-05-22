@@ -5,8 +5,9 @@ class ComponentaCerereClient extends React.Component {
   constructor(props) {
     super(props);
     this.formSubmit = this.formSubmit.bind(this);
-    this.formRef = React.createRef();
     this.fetchDateCerereClient = this.fetchDateCerereClient.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);         // <<< adăugat
+    this.formRef = React.createRef();
   }
 
   state = {
@@ -16,7 +17,8 @@ class ComponentaCerereClient extends React.Component {
     sendData: false,
     dateCerereClientList: [],
     dataLoaded: false,
-    completeLoading: false
+    completeLoading: false,
+    deleteLoading: false
   }
 
   // legăm corect this și prindem erorile
@@ -72,6 +74,21 @@ async formSubmit(event) {
     this.setState({ completeLoading: true }, () => {
       window.location = `/generareFactura?cerereId=${id_client}`;
     });
+  }
+
+    async handleDelete(id_client) {
+    const ok = window.confirm('Sigur vrei să ștergi această cerere?');
+    if (!ok) return;
+
+    this.setState({ deleteLoading: true });
+    try {
+      await APIHandler.deleteCerereClient(id_client);
+      await this.fetchDateCerereClient();   // reîncarcă lista după ștergere
+    } catch (err) {
+      alert('Eroare la ștergere: ' + (err.response?.data?.message || err.message));
+    } finally {
+      this.setState({ deleteLoading: false });
+    }
   }
 
   render() {
@@ -202,18 +219,29 @@ async formSubmit(event) {
                         <td>{cerereClient.status==0?'In Asteptare':'Completata'}</td>
                         <td>{new Date(cerereClient.data_cerere).toLocaleString('ro-RO')}</td>
                         <td>
-                          {cerereClient.status==0?(
-                          <button
-                          className="btn btn-block btn-warning"
-                            onClick={() => this.completeazaDetaliiCerereClient(cerereClient.id)}
-                            disabled={this.state.completeLoading}
-                          >
-                            {this.state.completeLoading ? "Redirecționare..." : "Completează"}
-                          </button>
-                          ):(
-                            <button className="btn btn-block btn-success"> Completata</button>
-                          )}
-                          </td>
+                        {cerereClient.status === 0 ? (
+                          <>
+                            <button
+                              className="btn btn-block btn-warning"
+                              onClick={() => this.completeazaDetaliiCerereClient(cerereClient.id)}
+                              disabled={this.state.completeLoading}
+                            >
+                              {this.state.completeLoading ? "Redirecționare..." : "Completează"}
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn btn-block btn-danger m-t-5"
+                              onClick={() => this.handleDelete(cerereClient.id)}
+                              disabled={this.state.deleteLoading}
+                            >
+                              {this.state.deleteLoading ? "Se șterge..." : "Șterge cererea"}
+                            </button>
+                          </>
+                        ) : (
+                          <button className="btn btn-block btn-success">Completată</button>
+                        )}                          
+                        </td>
                       </tr>))}
                     </tbody>
                   </table>

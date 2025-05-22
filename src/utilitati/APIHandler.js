@@ -551,6 +551,16 @@ async editDateAngajati({ id, nume, prenume, email, telefon, data_angajare, adres
     return response;
 }
 
+  async deleteCerereClient(id_client) {
+    await this.checkLogin();
+    const url = `${Config.cerereClientApiUrl}${id_client}/`;
+    const response = await Axios.delete(
+      url,
+      { headers: { Authorization: `Bearer ${AuthHandler.getLoginToken()}` } }
+    );
+    return response;
+  }
+
   async deleteBancaFurnizor(id) {
     await this.checkLogin();
     const url = `${Config.furnizorBancaApiUrl}${id}/`;

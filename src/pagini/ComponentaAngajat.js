@@ -183,22 +183,23 @@ class ComponentaAngajat extends React.Component {
                           <td>{ang.telefon}</td>
                           <td>{ang.username}</td>
                           <td>{ang.este_admin ? 'Admin' : 'Angajat'}</td>
-                          <td>
-                            <div className="d-flex flex-column">
-                              <button
-                                className="btn btn-primary mb-2"
-                                onClick={() => this.ArataDetaliiAngajati(ang.id)}
-                              >
-                                Vizualizare
-                              </button>
-                              <button
-                                className="btn btn-danger"
-                                onClick={() => this.deleteAngajat(ang.id)}
-                              >
-                                Șterge
-                              </button>
-                            </div>
-                          </td>
+                        <td>
+                          <div className="btn-group-vertical" role="group">
+                            <button
+                              className="btn btn-primary mb-2 w-100"
+                              onClick={() => this.ArataDetaliiAngajati(ang.id)}
+                            >
+                              Vizualizare
+                            </button>
+                            <button
+                              className="btn btn-danger w-100"
+                              onClick={() => this.deleteAngajat(ang.id)}
+                            >
+                              Șterge
+                            </button>
+                          </div>
+                        </td>
+
                         </tr>
                       ))}
                     </tbody>
