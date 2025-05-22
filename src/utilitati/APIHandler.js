@@ -242,6 +242,26 @@ async deleteDateFurnizor(id_furnizor) {
   
     return response;
   }
+    async deleteProdusData(id) {
+    // Verifică și reîmprospătează token-ul dacă e nevoie
+    await this.checkLogin();
+
+    try {
+      const url = `${Config.produsApiUrl}/${id}/`;
+      const response = await Axios.delete(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${AuthHandler.getLoginToken()}`
+          }
+        }
+      );
+      return response;
+    } catch (error) {
+      // Propaghează eroarea ca să poată fi prinsă de apelant
+      throw error;
+    }
+  }
   async fetchAllProduse() {
     await this.checkLogin();
 

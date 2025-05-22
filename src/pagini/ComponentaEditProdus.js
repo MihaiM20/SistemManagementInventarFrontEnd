@@ -5,6 +5,7 @@ class ComponentaEditProdus extends React.Component {
   constructor(props) {
     super(props);
     this.formSubmit = this.formSubmit.bind(this);
+    this.deleteProdus = this.deleteProdus.bind(this);
   }
 
   state = {
@@ -39,7 +40,6 @@ class ComponentaEditProdus extends React.Component {
     event.preventDefault();
     this.setState({ btnMessage: 1 });
   
-    // Construim payload-ul cu toate câmpurile și id-ul produsului
     const payload = {
       nume: event.target.nume.value,
       tip_produs: event.target.tip_produs.value,
@@ -55,11 +55,10 @@ class ComponentaEditProdus extends React.Component {
       cantitate_in_pachet: event.target.cantitate_in_pachet.value,
       id_furnizor: event.target.id_furnizor.value,
       detalii_produs: this.state.detaliiprodus,
-      id: this.state.produs_id  // asigurăm transmiterea id-ului
+      id: this.state.produs_id
     };
   
     try {
-      // Apelează editProdusData cu un singur obiect payload
       const response = await APIHandler.editProdusData(payload);
   
       this.setState({ 
@@ -69,7 +68,6 @@ class ComponentaEditProdus extends React.Component {
         sendData: true
       });
   
-      // Reîncarcă lista de produse după edit
       await this.LoadDateInitiale();
     } catch (error) {
       this.setState({
@@ -85,7 +83,6 @@ class ComponentaEditProdus extends React.Component {
     this.LoadDateInitiale();
   }
 
-  // Folosește metode statice APIHandler fără instanțiere
   async LoadDateInitiale() {
     try {
       const dateFurnizori = await APIHandler.fetchFurnizorOnly();
@@ -127,11 +124,9 @@ class ComponentaEditProdus extends React.Component {
   };
 
   RemoveItem = () => {
-    if (this.state.detaliiprodus.length !== this.state.total_atribut_list) {
-      // scoatem ultimul element
-      this.state.detaliiprodus.pop(this.state.detaliiprodus.lenght - 1);
+    if (this.state.detaliiprodus.length > this.state.total_atribut_list) {
+      this.state.detaliiprodus.pop();
     }
-    // forțăm React să re-randeze componenta
     this.setState({});
   };
 
@@ -159,6 +154,18 @@ class ComponentaEditProdus extends React.Component {
       errorMessage: ''
     });
   };
+
+  async deleteProdus(id) {
+    if (window.confirm('Sigur doriți să ștergeți acest produs?')) {
+      try {
+        await APIHandler.deleteProdusData(id);
+        this.LoadDateInitiale();
+      } catch (error) {
+        console.error('Eroare la ștergere:', error);
+        alert(error.response?.data?.message || 'Eroare la ștergere');
+      }
+    }
+  }
 
   render() {
     return (
@@ -544,6 +551,7 @@ class ComponentaEditProdus extends React.Component {
                       className="btn btn-primary m-t-15 waves-effect btn-block"
                       disabled={this.state.btnMessage === 0 ? false : true}
                     >
+                    <button className="btn btn-sm btn-danger m-1" onClick={() => this.deleteProdus(produs.id)}>Șterge</button>
                       {this.state.btnMessage === 0
                         ? "Editează Produs"
                         : "Se actualizează produsul..."}
