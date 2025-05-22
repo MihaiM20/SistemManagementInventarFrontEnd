@@ -12,7 +12,7 @@ class Login extends React.Component {
   state = {
     username: '',
     password: '',
-    showPassword: false,       // nou: toggle password visibility
+    showPassword: false,       // toggle password visibility
     btnDisabled: true,
     rememberMe: false,
     loginStatus: 0,
@@ -21,11 +21,8 @@ class Login extends React.Component {
   saveInputs = (event) => {
     const key = event.target.name;
     this.setState({ [key]: event.target.value }, () => {
-      if (this.state.username.length > 0 && this.state.password.length > 0) {
-        this.setState({ btnDisabled: false });
-      } else {
-        this.setState({ btnDisabled: true });
-      }
+      const { username, password } = this.state;
+      this.setState({ btnDisabled: !(username && password) });
     });
   };
 
@@ -94,7 +91,7 @@ class Login extends React.Component {
           subsets={['latin']}
         />
         <GoogleFontLoader
-          fonts={[{ font: 'Material+Icons' }]}
+          fonts={[{ font: 'Material Icons' }]} 
         />
         <div className="login-box">
           <div className="logo">
@@ -148,7 +145,7 @@ class Login extends React.Component {
                         transform: 'translateY(-50%)',
                         cursor: 'pointer',
                         fontSize: '20px',
-                        color: '#888'
+                        userSelect: 'none'
                       }}
                     >
                       {showPassword ? 'visibility_off' : 'visibility'}
