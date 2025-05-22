@@ -238,12 +238,8 @@ class ComponentaEditProdus extends React.Component {
                           <td>{produs.furnizor.nume}</td>
                           <td>{new Date(produs.data_adaugare).toLocaleString('ro-RO')}</td>
                           <td>
-                            <button
-                              className="btn btn-block btn-warning"
-                              onClick={() => this.viewDetaliiProdus(index)}
-                            >
-                              Vizualizare
-                            </button>
+                            <button className="btn btn-sm btn-warning m-1" onClick={() => this.viewDetaliiProdus(index)}>Vizualizare</button>
+                            <button className="btn btn-sm btn-danger m-1" onClick={() => this.deleteProdus(produs.id)}>Șterge</button>
                           </td>
                         </tr>
                       ))}
@@ -551,7 +547,6 @@ class ComponentaEditProdus extends React.Component {
                       className="btn btn-primary m-t-15 waves-effect btn-block"
                       disabled={this.state.btnMessage === 0 ? false : true}
                     >
-                                                  <button className="btn btn-sm btn-danger m-1" onClick={() => this.deleteProdus(produs.id)}>Șterge</button>
                       {this.state.btnMessage === 0
                         ? "Editează Produs"
                         : "Se actualizează produsul..."}
