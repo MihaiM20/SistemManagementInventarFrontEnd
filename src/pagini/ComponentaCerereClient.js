@@ -219,7 +219,7 @@ async formSubmit(event) {
                         <td>{cerereClient.status==0?'In Asteptare':'Completata'}</td>
                         <td>{new Date(cerereClient.data_cerere).toLocaleString('ro-RO')}</td>
                         <td>
-                        {cerereClient.status === 0 ? (
+                        {Number(cerereClient.status) === 0 ? (
                           <>
                             <button
                               className="btn btn-block btn-warning"
