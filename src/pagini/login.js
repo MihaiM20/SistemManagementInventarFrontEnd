@@ -12,7 +12,7 @@ class Login extends React.Component {
   state = {
     username: '',
     password: '',
-    showPassword: false,       // toggle password visibility
+    showPassword: false,
     btnDisabled: true,
     rememberMe: false,
     loginStatus: 0,
@@ -90,9 +90,12 @@ class Login extends React.Component {
           ]}
           subsets={['latin']}
         />
-        <GoogleFontLoader
-          fonts={[{ font: 'Material Icons' }]} 
+        {/* Include Material Icons */}
+        <link
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet"
         />
+
         <div className="login-box">
           <div className="logo">
             <a href="#">Sistem<b>Inventar</b></a>
@@ -103,7 +106,7 @@ class Login extends React.Component {
               <form id="sign_in" method="POST" onSubmit={this.formSubmit}>
                 <div className="msg">Autentifică-te pentru a începe sesiunea</div>
 
-                {/* Username */}
+                {/* Username field */}
                 <div className="input-group">
                   <span className="input-group-addon">
                     <i className="material-icons">person</i>
@@ -121,12 +124,12 @@ class Login extends React.Component {
                   </div>
                 </div>
 
-                {/* Password with toggle */}
+                {/* Password field with visibility toggle */}
                 <div className="input-group">
                   <span className="input-group-addon">
                     <i className="material-icons">lock</i>
                   </span>
-                  <div className="form-line" style={{ position: 'relative' }}>
+                  <div className="form-line" style={{ position: 'relative', overflow: 'visible' }}>
                     <input
                       type={showPassword ? 'text' : 'password'}
                       className="form-control"
@@ -145,7 +148,8 @@ class Login extends React.Component {
                         transform: 'translateY(-50%)',
                         cursor: 'pointer',
                         fontSize: '20px',
-                        userSelect: 'none'
+                        userSelect: 'none',
+                        zIndex: 2
                       }}
                     >
                       {showPassword ? 'visibility_off' : 'visibility'}
@@ -153,7 +157,7 @@ class Login extends React.Component {
                   </div>
                 </div>
 
-                {/* Submit */}
+                {/* Submit button */}
                 <div className="row">
                   <div className="col-xs-4 col-xs-offset-4">
                     <button
