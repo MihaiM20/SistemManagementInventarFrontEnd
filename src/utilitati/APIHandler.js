@@ -42,6 +42,16 @@ class APIHandler {
     return response;
   }
 
+    async deleteDateTranzactiiFurnizor(id) {
+    await this.checkLogin();
+    const url = `${Config.contfurnizorApiUrl}${id}/`;
+    const response = await Axios.delete(
+      url,
+      { headers: { Authorization: `Bearer ${AuthHandler.getLoginToken()}` } }
+    );
+    return response;
+  }
+
 
   async fetchAllFurnizori() {
     await this.checkLogin();
@@ -393,6 +403,24 @@ async saveDateAngajati({ nume, prenume, email, telefon, username, parola, este_a
 
   return response;
 }
+
+  // Șterge angajatul cu id-ul dat
+  async deleteDateAngajati(id_angajat) {
+    await this.checkLogin();
+    const url = `${Config.angajatApiUrl}${id_angajat}/`;
+    try {
+      const response = await Axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${AuthHandler.getLoginToken()}`
+        }
+      });
+      return response;
+    } catch (error) {
+      // Propaghează eroarea mai departe
+      throw error;
+    }
+  }
+
 
 
     async saveDateCerereClient(nume_client, telefon, detalii_produs) {

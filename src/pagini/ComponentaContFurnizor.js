@@ -16,31 +16,31 @@ class ComponentaContFurnizor extends React.Component {
     dataLoaded: false,
     furnizorlist: [],
     allProducts: [],        // lista tuturor produselor
-    id_furnizor: "",        // furnizorul selectat
-    suma_tranzactie: 0     // suma calculată
-    }
+    id_furnizor: "",       // furnizorul selectat
+    suma_tranzactie: 0       // suma calculată
+  };
 
   async formSubmit(event) {
     event.preventDefault();
     this.setState({ btnMessage: 1 });
 
     try {
-        const { id_furnizor, suma_tranzactie } = this.state;
-        const { tip_tranzactie, data_tranzactie, modalitate_plata } = event.target;
-        const response = await APIHandler.saveDateTranzactiiFurnizor(
-          id_furnizor,
-          tip_tranzactie.value,
-          suma_tranzactie,
-          data_tranzactie.value,
-          modalitate_plata.value
-        );
+      const { id_furnizor, suma_tranzactie } = this.state;
+      const { tip_tranzactie, data_tranzactie, modalitate_plata } = event.target;
+      const response = await APIHandler.saveDateTranzactiiFurnizor(
+        id_furnizor,
+        tip_tranzactie.value,
+        suma_tranzactie,
+        data_tranzactie.value,
+        modalitate_plata.value
+      );
       console.log(response);
 
       this.setState({
         btnMessage: 0,
         errorRes: response.data.error,
         errorMessage: response.data.message,
-        sendData: true,
+        sendData: true
       });
       await this.updateDataAgain();
     } catch (err) {
@@ -54,59 +54,64 @@ class ComponentaContFurnizor extends React.Component {
     }
   }
 
-async componentDidMount() {
-  await this.fetchDateContFurnizori();
-  // după ce ai furnizorii și conturile, încarcă toate produsele
-  const respProd = await APIHandler.fetchAllProduse();
-  this.setState({ allProducts: respProd.data.data });
-}
+  async componentDidMount() {
+    await this.fetchDateContFurnizori();
+    const respProd = await APIHandler.fetchAllProduse();
+    this.setState({ allProducts: respProd.data.data });
+  }
 
-
-
-async fetchDateContFurnizori() {
-  const datefurnizori = await APIHandler.fetchFurnizorOnly();
-  const datecont = await APIHandler.fetchAllContFurnizori();
-  this.setState({
-    furnizorlist: datefurnizori.data,
-    datecontFurnizori: datecont.data.data,
-    dataLoaded: true
-  });
-}
-
+  async fetchDateContFurnizori() {
+    const datefurnizori = await APIHandler.fetchFurnizorOnly();
+    const datecont = await APIHandler.fetchAllContFurnizori();
+    this.setState({
+      furnizorlist: datefurnizori.data,
+      datecontFurnizori: datecont.data.data,
+      dataLoaded: true
+    });
+  }
 
   async updateDataAgain() {
     try {
       const resp = await APIHandler.fetchAllContFurnizori();
-      // actualizezi starea
-      this.setState({
-        datecontFurnizori: resp.data.data
-      });
+      this.setState({ datecontFurnizori: resp.data.data });
       console.log("Cont furnizori actualizat:", resp.data.data);
     } catch (err) {
       console.error("Eroare la actualizare date furnizori:", err);
     }
   }
 
-handleFurnizorChange = e => {
-  const idF = Number(e.target.value);
-  this.setState({ id_furnizor: idF }, () => {
-    // filtrează produsele după furnizor și calculează suma
-    const filtrate = this.state.allProducts.filter(p => p.id_furnizor === idF || (p.furnizor && p.furnizor.id === idF));
-    const total = filtrate.reduce((acc, p) => acc + p.pret_cumparare * p.stoc_total, 0);
-    this.setState({ suma_tranzactie: total });
-    console.log('Produse filtrate:', filtrate, '→ sumă', total);
-  });
-};
+  handleFurnizorChange = e => {
+    const idF = Number(e.target.value);
+    this.setState({ id_furnizor: idF }, () => {
+      const filtrate = this.state.allProducts.filter(
+        p => p.id_furnizor === idF || (p.furnizor && p.furnizor.id === idF)
+      );
+      const total = filtrate.reduce((acc, p) => acc + p.pret_cumparare * p.stoc_total, 0);
+      this.setState({ suma_tranzactie: total });
+      console.log('Produse filtrate:', filtrate, '→ sumă', total);
+    });
+  };
 
+  handleDelete = async id => {
+    if (!window.confirm("Ești sigur că vrei să ștergi această tranzacție?")) return;
+    this.setState({ btnMessage: 1 });
+    try {
+      await APIHandler.deleteDateTranzactiiFurnizor(id);
+      this.setState({ btnMessage: 0 });
+      await this.updateDataAgain();
+    } catch (err) {
+      console.error("Eroare la ștergere:", err);
+      this.setState({ btnMessage: 0 });
+      alert("Eroare la ștergere: " + (err.response?.data?.message || err.message));
+    }
+  };
 
-
-  viewDetaliiContFurnizor = (id) => {
-    console.log("ID cont furnizor selectat:", id);
+  viewDetaliiContFurnizor = id => {
     this.props.navigate(`/detaliicontfurnizor/${id}`);
-  }
+  };
 
   render() {
-    const { btnMessage, errorRes, sendData, errorMessage } = this.state;
+    const { btnMessage, errorRes, sendData, errorMessage, dataLoaded, datecontFurnizori } = this.state;
 
     return (
       <section className="content">
@@ -154,6 +159,7 @@ handleFurnizorChange = e => {
                               id="tip_tranzactie"
                               name="tip_tranzactie"
                               className="form-control"
+                              defaultValue=""
                             >
                               <option value="" disabled>-- Alege tip tranzacție --</option>
                               <option value="1">Debit</option>
@@ -248,11 +254,12 @@ handleFurnizorChange = e => {
           </div>
 
           {/* Tabel tranzacții */}
+          {/* Tabel tranzacții */}
           <div className="row clearfix">
             <div className="col-lg-12">
               <div className="card">
                 <div className="header">
-                  {!this.state.dataLoaded && (
+                  {!dataLoaded && (
                     <div className="text-center">
                       <div className="preloader pl-size-xl">
                         <div className="spinner-layer">
@@ -271,23 +278,33 @@ handleFurnizorChange = e => {
                         <th>#ID</th>
                         <th>Nume Furnizor</th>
                         <th>ID Furnizor</th>
-                        <th>Tip Tranzactie</th>
-                        <th>Suma</th>
+                        <th>Tip Tranzacție</th>
+                        <th>Sumă</th>
                         <th>Data</th>
-                        <th>Modalitate plata</th>
+                        <th>Modalitate plată</th>
+                        <th>Acțiuni</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {this.state.datecontFurnizori.map((cont) => (
+                      {datecontFurnizori.map((cont) => (
                         <tr key={cont.id}>
                           <td>{cont.id}</td>
                           <td>{cont.furnizor.nume}</td>
                           <td>{cont.furnizor.id}</td>
-                          <td>{(cont.furnizor.tip_tranzactie===1)?"Debit":"Credit"}</td>
+                          <td>{cont.tip_tranzactie === 1 ? "Debit" : "Credit"}</td>
                           <td>{cont.suma_tranzactie}</td>
                           <td>{cont.data_tranzactie}</td>
                           <td>{cont.modalitate_plata}</td>
-                        </tr>
+                          <td>
+                            <button
+                              onClick={() => this.handleDelete(cont.id)}
+                              className="btn btn-danger btn-sm"
+                              disabled={btnMessage !== 0}
+                            >
+                              Șterge
+                            </button>
+                          </td>
+                        </tr>                      
                       ))}
                     </tbody>
                   </table>

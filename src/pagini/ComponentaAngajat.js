@@ -68,6 +68,22 @@ class ComponentaAngajat extends React.Component {
     this.props.navigate(`/detaliiangajat/${angid}`);
   }
 
+    // În interiorul clasei ComponentaAngajat, lângă celelalte metode:
+  deleteAngajat = async (id) => {
+    // Confirmare
+    if (!window.confirm("Sigur vrei să ștergi acest angajat?")) return;
+
+    try {
+      await APIHandler.deleteDateAngajati(id);
+      // După succes, reîncarcă lista
+      this.updateDataAgain();
+    } catch (err) {
+      console.error("Eroare la ștergerea angajatului:", err);
+      alert(err.response?.data?.message || "Nu am putut șterge angajatul.");
+    }
+  }
+
+
   render() {
     const { btnMessage, errorRes, sendData, errorMessage, listaAngajati } = this.state;
 
@@ -168,9 +184,20 @@ class ComponentaAngajat extends React.Component {
                           <td>{ang.username}</td>
                           <td>{ang.este_admin ? 'Admin' : 'Angajat'}</td>
                           <td>
-                            <button className="btn btn-primary" onClick={() => this.ArataDetaliiAngajati(ang.id)}>
-                              Vizualizare
-                            </button>
+                            <div className="d-flex flex-column">
+                              <button
+                                className="btn btn-primary mb-2"
+                                onClick={() => this.ArataDetaliiAngajati(ang.id)}
+                              >
+                                Vizualizare
+                              </button>
+                              <button
+                                className="btn btn-danger"
+                                onClick={() => this.deleteAngajat(ang.id)}
+                              >
+                                Șterge
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
