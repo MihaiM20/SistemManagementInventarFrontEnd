@@ -20,38 +20,40 @@ class ComponentaCerereClient extends React.Component {
   }
 
   // legăm corect this și prindem erorile
-  async formSubmit(event) {
-    event.preventDefault();
-    this.setState({ btnMessage: 1 });
+async formSubmit(event) {
+  event.preventDefault();
+  this.setState({ btnMessage: 1 });
 
-    try {
-      // APIHandler e deja instanță => fără new
-      const response = await APIHandler.saveDateCerereClient(
-        event.target.nume_client.value,
-        event.target.telefon.value,
-        event.target.detalii_produs.value
-      );
-      console.log(response);
+  try {
+    const response = await APIHandler.saveDateCerereClient(
+      event.target.nume_client.value,
+      event.target.telefon.value,
+      event.target.detalii_produs.value
+    );
+    console.log(response);
 
-      // update state într-o singură cheamă
-      this.setState({
-        btnMessage: 0,
-        errorRes: response.data.error,
-        errorMessage: response.data.message,
-        sendData: true
-      });
-    } catch (err) {
-      console.error("Eroare la salvare:", err);
-      this.setState({
-        btnMessage: 0,
-        errorRes: true,
-        errorMessage: err.response?.data?.message || "A apărut o eroare",
-        sendData: true
-      });
-      this.fetchDateCerereClient()
+    this.setState({
+      btnMessage: 0,
+      errorRes: response.data.error,
+      errorMessage: response.data.message,
+      sendData: true
+    }, async () => {
+      // 1) Reîncarcă lista de cereri imediat după succes
+      await this.fetchDateCerereClient();
+      // 2) Golește formularul pentru următoarea introducere
       this.formRef.current.reset();
-    }
+    });
+  } catch (err) {
+    console.error("Eroare la salvare:", err);
+    this.setState({
+      btnMessage: 0,
+      errorRes: true,
+      errorMessage: err.response?.data?.message || "A apărut o eroare",
+      sendData: true
+    });
   }
+}
+
 
   componentDidMount(){
     this.fetchDateCerereClient();

@@ -155,6 +155,7 @@ handleFurnizorChange = e => {
                               name="tip_tranzactie"
                               className="form-control"
                             >
+                              <option value="" disabled>-- Alege tip tranzacție --</option>
                               <option value="1">Debit</option>
                               <option value="2">Credit</option>
                             </select>
