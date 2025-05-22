@@ -551,7 +551,7 @@ class ComponentaEditProdus extends React.Component {
                       className="btn btn-primary m-t-15 waves-effect btn-block"
                       disabled={this.state.btnMessage === 0 ? false : true}
                     >
-                    <button className="btn btn-sm btn-danger m-1" onClick={() => this.deleteProdus(produs.id)}>Șterge</button>
+                                                  <button className="btn btn-sm btn-danger m-1" onClick={() => this.deleteProdus(produs.id)}>Șterge</button>
                       {this.state.btnMessage === 0
                         ? "Editează Produs"
                         : "Se actualizează produsul..."}
