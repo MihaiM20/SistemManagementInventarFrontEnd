@@ -219,7 +219,8 @@ async formSubmit(event) {
                         <td>{cerereClient.status==0?'In Asteptare':'Completata'}</td>
                         <td>{new Date(cerereClient.data_cerere).toLocaleString('ro-RO')}</td>
                         <td>
-                        {Number(cerereClient.status) === 0 ? (
+                          
+                        {cerereClient.status === 0 ? (
                           <>
                             <button
                               className="btn btn-block btn-warning"
@@ -228,19 +229,18 @@ async formSubmit(event) {
                             >
                               {this.state.completeLoading ? "Redirecționare..." : "Completează"}
                             </button>
-
-                            <button
-                              type="button"
-                              className="btn btn-block btn-danger m-t-5"
-                              onClick={() => this.handleDelete(cerereClient.id)}
-                              disabled={this.state.deleteLoading}
-                            >
-                              {this.state.deleteLoading ? "Se șterge..." : "Șterge cererea"}
-                            </button>
                           </>
                         ) : (
                           <button className="btn btn-block btn-success">Completată</button>
-                        )}                          
+                        )}
+                          <button
+                            type="button"
+                            className="btn btn-block btn-danger mt-2"
+                            onClick={() => this.handleDelete(cerereClient.id)}
+                            disabled={this.state.deleteLoading}
+                          >
+                            {this.state.deleteLoading ? "Se șterge..." : "Șterge cererea"}
+                          </button>                          
                         </td>
                       </tr>))}
                     </tbody>
