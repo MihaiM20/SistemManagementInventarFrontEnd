@@ -238,8 +238,18 @@ class ComponentaEditProdus extends React.Component {
                           <td>{produs.furnizor.nume}</td>
                           <td>{new Date(produs.data_adaugare).toLocaleString('ro-RO')}</td>
                           <td>
-                            <button className="btn btn-sm btn-warning m-1" onClick={() => this.viewDetaliiProdus(index)}>Vizualizare</button>
-                            <button className="btn btn-sm btn-danger m-1" onClick={() => this.deleteProdus(produs.id)}>Șterge</button>
+                            <button
+                              className="btn btn-sm btn-warning btn-block mb-1"
+                              onClick={() => this.viewDetaliiProdus(index)}
+                            >
+                              Vizualizare
+                            </button>
+                            <button
+                              className="btn btn-sm btn-danger btn-block"
+                              onClick={() => this.deleteProdus(produs.id)}
+                            >
+                              Șterge
+                            </button>
                           </td>
                         </tr>
                       ))}

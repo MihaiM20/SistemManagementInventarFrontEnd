@@ -124,39 +124,41 @@ class Login extends React.Component {
                   </div>
                 </div>
 
-                {/* Password field with visibility toggle */}
-                <div className="input-group">
-                  <span className="input-group-addon">
-                    <i className="material-icons">lock</i>
-                  </span>
-                  <div className="form-line" style={{ position: 'relative', overflow: 'visible' }}>
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      className="form-control"
-                      name="password"
-                      placeholder="Parolă"
-                      required
-                      onChange={this.saveInputs}
-                    />
-                    <i
-                      className="material-icons"
-                      onClick={this.toggleShowPassword}
-                      style={{
-                        position: 'absolute',
-                        right: '10px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        cursor: 'pointer',
-                        fontSize: '20px',
-                        userSelect: 'none',
-                        zIndex: 2
-                      }}
+                    {/* Password field with visibility toggle */}
+                    <div
+                      className="input-group"
+                      style={{ position: 'relative', overflow: 'visible' }}
                     >
-                      {showPassword ? 'visibility_off' : 'visibility'}
-                    </i>
-                  </div>
-                </div>
-
+                      <span className="input-group-addon">
+                        <i className="material-icons">lock</i>
+                      </span>
+                      <div className="form-line">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          className="form-control"
+                          name="password"
+                          placeholder="Parolă"
+                          required
+                          onChange={this.saveInputs}
+                        />
+                      </div>
+                      <i
+                        className="material-icons"
+                        onClick={this.toggleShowPassword}
+                        style={{
+                          position: 'absolute',
+                          right: '10px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          cursor: 'pointer',
+                          fontSize: '20px',
+                          userSelect: 'none',
+                          zIndex: 999
+                        }}
+                      >
+                        {showPassword ? 'visibility_off' : 'visibility'}
+                      </i>
+                    </div>
                 {/* Submit button */}
                 <div className="row">
                   <div className="col-xs-4 col-xs-offset-4">
