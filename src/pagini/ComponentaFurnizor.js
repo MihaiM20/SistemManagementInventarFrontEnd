@@ -16,13 +16,12 @@ class ComponentaFurnizor extends React.Component {
     dataLoaded: false
   }
 
-  // legăm corect this și prindem erorile
+  // Submit form and refresh table on success
   async formSubmit(event) {
     event.preventDefault();
     this.setState({ btnMessage: 1 });
 
     try {
-      // APIHandler e deja instanță => fără new
       const response = await APIHandler.saveDateFurnizor(
         event.target.nume.value,
         event.target.adresa.value,
@@ -30,15 +29,20 @@ class ComponentaFurnizor extends React.Component {
         event.target.email.value,
         event.target.descriere.value
       );
-      console.log(response);
 
-      // update state într-o singură cheamă
-      this.setState({
-        btnMessage: 0,
-        errorRes: response.data.error,
-        errorMessage: response.data.message,
-        sendData: true
-      });
+      this.setState(
+        {
+          btnMessage: 0,
+          errorRes: response.data.error,
+          errorMessage: response.data.message,
+          sendData: true
+        },
+        () => {
+          if (!response.data.error) {
+            this.fetchDateFurnizori();
+          }
+        }
+      );
     } catch (err) {
       console.error("Eroare la salvare:", err);
       this.setState({
@@ -50,25 +54,41 @@ class ComponentaFurnizor extends React.Component {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.fetchDateFurnizori();
   }
 
-  async fetchDateFurnizori(){
-    // APIHandler e instanță, fără new
-    const datefurnizori = await APIHandler.fetchAllFurnizori();
-    console.log(datefurnizori);
-    this.setState({furnizorDataList: datefurnizori.data.data});
-    this.setState({dataLoaded: true});
+  async fetchDateFurnizori() {
+    try {
+      const datefurnizori = await APIHandler.fetchAllFurnizori();
+      this.setState({
+        furnizorDataList: datefurnizori.data.data,
+        dataLoaded: true
+      });
+    } catch (err) {
+      console.error("Eroare la încărcarea furnizorilor:", err);
+      this.setState({ dataLoaded: true, errorRes: true, errorMessage: 'Eroare la încărcarea datelor' });
+    }
   }
 
   viewDetaliiFurnizor = (id_furnizor) => {
-    console.log("ID furnizor selectat:", id_furnizor);
-    this.props.navigate("/detaliifurnizor/" + id_furnizor);
-}
+    this.props.navigate(`/detaliifurnizor/${id_furnizor}`);
+  }
+
+  // Delete a furnizor and refresh list
+  deleteFurnizor = async (id_furnizor) => {
+    if (!window.confirm('Sigur dorești să ștergi acest furnizor?')) return;
+    try {
+      await APIHandler.deleteDateFurnizor(id_furnizor);
+      this.fetchDateFurnizori();
+    } catch (err) {
+      console.error('Eroare la ștergere:', err);
+      this.setState({ errorRes: true, errorMessage: err.response?.data?.message || 'Eroare la ștergere', sendData: true });
+    }
+  }
 
   render() {
-    const { btnMessage, errorRes, sendData, errorMessage } = this.state;
+    const { btnMessage, errorRes, sendData, errorMessage, dataLoaded, furnizorDataList } = this.state;
 
     return (
       <section className="content">
@@ -85,78 +105,40 @@ class ComponentaFurnizor extends React.Component {
                 </div>
                 <div className="body">
                   <form onSubmit={this.formSubmit}>
+                    {/* Form fields... */}
                     <label htmlFor="nume">Nume</label>
                     <div className="form-group">
                       <div className="form-line">
-                        <input
-                          type="text"
-                          id="nume"
-                          name="nume"
-                          className="form-control"
-                          placeholder="Introdu numele furnizorului"
-                        />
+                        <input type="text" id="nume" name="nume" className="form-control" placeholder="Introdu numele furnizorului" />
                       </div>
                     </div>
-
                     <label htmlFor="adresa">Adresa</label>
                     <div className="form-group">
                       <div className="form-line">
-                        <input
-                          type="text"
-                          id="adresa"
-                          name="adresa"
-                          className="form-control"
-                          placeholder="Introdu adresa furnizorului"
-                        />
+                        <input type="text" id="adresa" name="adresa" className="form-control" placeholder="Introdu adresa furnizorului" />
                       </div>
                     </div>
-
                     <label htmlFor="nr_telefon">Număr Telefon</label>
                     <div className="form-group">
                       <div className="form-line">
-                        <input
-                          type="text"
-                          id="nr_telefon"
-                          name="nr_telefon"
-                          className="form-control"
-                          placeholder="Introdu numărul de telefon"
-                        />
+                        <input type="text" id="nr_telefon" name="nr_telefon" className="form-control" placeholder="Introdu numărul de telefon" />
                       </div>
                     </div>
-
                     <label htmlFor="email">Email</label>
                     <div className="form-group">
                       <div className="form-line">
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          className="form-control"
-                          placeholder="Introdu adresa de email"
-                        />
+                        <input type="email" id="email" name="email" className="form-control" placeholder="Introdu adresa de email" />
                       </div>
                     </div>
-
                     <label htmlFor="descriere">Descriere</label>
                     <div className="form-group">
                       <div className="form-line">
-                        <input
-                          id="descriere"
-                          name="descriere"
-                          className="form-control"
-                          placeholder="Introdu descrierea furnizorului"
-                        />
+                        <input id="descriere" name="descriere" className="form-control" placeholder="Introdu descrierea furnizorului" />
                       </div>
                     </div>
 
-                    <button
-                      type="submit"
-                      className="col-lg-6 btn btn-block btn-primary wave-effect"
-                      disabled={btnMessage !== 0}
-                    >
-                      {btnMessage === 0
-                        ? "Adaugă Furnizor"
-                        : "Furnizorul se adaugă, te rog așteaptă..."}
+                    <button type="submit" className="col-lg-6 btn btn-block btn-primary wave-effect" disabled={btnMessage !== 0}>
+                      {btnMessage === 0 ? 'Adaugă Furnizor' : 'Furnizorul se adaugă, te rog așteaptă...'}
                     </button>
                     <br />
 
@@ -175,27 +157,26 @@ class ComponentaFurnizor extends React.Component {
               </div>
             </div>
           </div>
+
           <div className="row clearfix">
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <div className="card">
                 <div className="header">
-                  {this.state.dataLoaded === false?(
-                <div className="text-center">
-                <div className="preloader pl-size-xl">
-                                    <div className="spinner-layer">
-                                        <div className="circle-clipper left">
-                                            <div className="circle"></div>
-                                        </div>
-                                        <div className="circle-clipper right">
-                                            <div className="circle"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                                ):""}
-                  <h2>
-                    Toți Furnizorii
-                  </h2>
+                  {!dataLoaded && (
+                    <div className="text-center">
+                      <div className="preloader pl-size-xl">
+                        <div className="spinner-layer">
+                          <div className="circle-clipper left">
+                            <div className="circle"></div>
+                          </div>
+                          <div className="circle-clipper right">
+                            <div className="circle"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <h2>Toți Furnizorii</h2>
                 </div>
                 <div className="body table-responsive">
                   <table className="table table-hover">
@@ -212,17 +193,25 @@ class ComponentaFurnizor extends React.Component {
                       </tr>
                     </thead>
                     <tbody>
-                    {this.state.furnizorDataList.map((furnizor) => (
-                       <tr key={furnizor.id}>
-                        <td>{furnizor.id}</td>
-                        <td>{furnizor.nume}</td>
-                        <td>{furnizor.adresa}</td>
-                        <td>{furnizor.nr_telefon}</td>
-                        <td>{furnizor.email}</td>
-                        <td>{furnizor.descriere}</td>
-                        <td>{new Date(furnizor.data_adaugare).toLocaleString('ro-RO')}</td>
-                        <td><button className="btn btn-block btn-warning" onClick={()=>this.viewDetaliiFurnizor(furnizor.id)}> Vizualizare</button></td>
-                      </tr>))}
+                      {furnizorDataList.map((furnizor) => (
+                        <tr key={furnizor.id}>
+                          <td>{furnizor.id}</td>
+                          <td>{furnizor.nume}</td>
+                          <td>{furnizor.adresa}</td>
+                          <td>{furnizor.nr_telefon}</td>
+                          <td>{furnizor.email}</td>
+                          <td>{furnizor.descriere}</td>
+                          <td>{new Date(furnizor.data_adaugare).toLocaleString('ro-RO')}</td>
+                          <td>
+                            <button className="btn btn-block btn-warning" onClick={() => this.viewDetaliiFurnizor(furnizor.id)}>
+                              Vizualizare
+                            </button>
+                            <button className="btn btn-block btn-danger mt-2" onClick={() => this.deleteFurnizor(furnizor.id)}>
+                              Șterge
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

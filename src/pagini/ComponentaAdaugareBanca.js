@@ -101,13 +101,19 @@ class ComponentaAdaugareBancaFurnizor extends React.Component {
                         : "Banca se adaugă, te rog așteaptă..."}
                     </button>
                     <br />
-
                     {sendData && !errorRes && (
                       <div className="alert alert-success">
-                        <strong>Succes!</strong> {errorMessage}
-                        <Link to={"/detaliifurnizor/"+this.props.params.id} className="btn btn-info m-t-15 waves-effect">
-                        Inapoi spre detalii furnizor
-                        </Link>
+                        <p className="text-center">
+                          <strong>Succes!</strong> {errorMessage}
+                        </p>
+                        <div className="text-center m-t-15">
+                          <Link
+                            to={`/detaliifurnizor/${this.props.params.id}`}
+                            className="btn btn-info waves-effect"
+                          >
+                            Înapoi spre detalii furnizor
+                          </Link>
+                        </div>
                       </div>
                     )}
                     {sendData && errorRes && (

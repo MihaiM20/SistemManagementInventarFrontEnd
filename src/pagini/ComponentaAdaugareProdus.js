@@ -22,14 +22,30 @@ class ComponentaAdaugareProdus extends React.Component {
     event.preventDefault();
     this.setState({ btnMessage: 1 });
 
-    // Transformăm câmpurile numerice
-    const pretCumparare = parseFloat(event.target.pret_cumparare.value);
-    const pretVanzare = parseFloat(event.target.pret_vanzare.value);
-    const tvaProdus = parseFloat(event.target.tva_produs.value);
-
+    // Transformăm câmpurile numerice cu suport virgula
+    const pretCumparare = Number(
+      event.target.pret_cumparare.value.replace(',', '.')
+    );
+    const pretVanzare = Number(
+      event.target.pret_vanzare.value.replace(',', '.')
+    );
+    const tvaProdus = Number(
+      event.target.tva_produs.value.replace(',', '.')
+    );
 
     const stocTotal = parseInt(event.target.stoc_total.value, 10);
-    const cantitateInPachet = parseInt(event.target.cantitate_in_pachet.value, 10);
+    const cantitateInPachet = parseInt(
+      event.target.cantitate_in_pachet.value,
+      10
+    );
+
+    // Debug și validare: nu trimitem NaN la backend
+    console.log({ pretCumparare, pretVanzare, tvaProdus, stocTotal, cantitateInPachet });
+    if ([pretCumparare, pretVanzare, tvaProdus].some(v => isNaN(v))) {
+      alert('Te rog să introduci valori zecimale valide, de ex: 6,75');
+      this.setState({ btnMessage: 0 });
+      return;
+    }
 
     try {
       const response = await APIHandler.saveDataAdaugareProdus({
@@ -96,12 +112,12 @@ class ComponentaAdaugareProdus extends React.Component {
 
   RemoveItem = () => {
     this.setState(prev => ({
-      detaliiprodus:
-        prev.detaliiprodus.length > 1
-          ? prev.detaliiprodus.slice(0, -1)
-          : prev.detaliiprodus
+      detaliiprodus: prev.detaliiprodus.length > 1
+        ? prev.detaliiprodus.slice(0, -1)
+        : prev.detaliiprodus
     }));
   }
+
 
   render() {
     const {
@@ -132,9 +148,9 @@ class ComponentaAdaugareProdus extends React.Component {
                     {[
                       { label: 'Nume', id: 'nume', name: 'nume', type: 'text' },
                       { label: 'Tip Produs', id: 'tip_produs', name: 'tip_produs', type: 'text' },
-                      { label: 'Preț Cumpărare', id: 'pret_cumparare', name: 'pret_cumparare', type: 'number', step: '0.01' },
-                      { label: 'Preț Vânzare', id: 'pret_vanzare', name: 'pret_vanzare', type: 'number', step: '0.01' },
-                      { label: 'TVA Produs', id: 'tva_produs', name: 'tva_produs', type: 'number', step: '0.01' },
+                      { label: 'Preț Cumpărare', id: 'pret_cumparare', name: 'pret_cumparare', type: 'decimal' },
+                      { label: 'Preț Vânzare', id: 'pret_vanzare', name: 'pret_vanzare', type: 'decimal' },
+                      { label: 'TVA Produs', id: 'tva_produs', name: 'tva_produs', type: 'decimal' },
                       { label: 'Nr. Lot', id: 'nr_lot', name: 'nr_lot', type: 'text' },
                       { label: 'Nr. Raft', id: 'nr_raft', name: 'nr_raft', type: 'text' },
                       { label: 'Data Expirare', id: 'data_expirare', name: 'data_expirare', type: 'date' },
@@ -147,14 +163,38 @@ class ComponentaAdaugareProdus extends React.Component {
                         <label htmlFor={field.id}>{field.label}</label>
                         <div className="form-group">
                           <div className="form-line">
-                            <input
-                              type={field.type}
-                              id={field.id}
-                              name={field.name}
-                              className="form-control"
-                              placeholder={`Introdu ${field.label.toLowerCase()}`}
-                              {...(field.step && { step: field.step })}
-                            />
+                            {field.type === 'decimal' ? (
+                              <input
+                                type="text"
+                                id={field.id}
+                                name={field.name}
+                                className="form-control"
+                                placeholder={`Introdu ${field.label.toLowerCase()}`}
+                                inputMode="decimal"
+                                pattern="[0-9]+([.,][0-9]+)?"
+                                onKeyPress={e => {
+                                  const allowed = /[0-9.,]/;
+                                  if (!allowed.test(e.key)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                onPaste={e => {
+                                  const paste =
+                                    (e.clipboardData || window.clipboardData).getData('text');
+                                  if (!/^[0-9.,]+$/.test(paste)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <input
+                                type={field.type}
+                                id={field.id}
+                                name={field.name}
+                                className="form-control"
+                                placeholder={`Introdu ${field.label.toLowerCase()}`}
+                              />
+                            )}
                           </div>
                         </div>
                       </React.Fragment>

@@ -118,9 +118,25 @@ class APIHandler {
         }
       }
     );
-
     return response;
   }
+
+// În clasa APIHandler, după celelalte metode:
+async deleteDateFurnizor(id_furnizor) {
+  await this.checkLogin();
+  // Construiește URL-ul exact pentru DELETE
+  const url = `${Config.furnizorApiUrl}${id_furnizor}/`;
+  const response = await Axios.delete(
+    url,
+    {
+      headers: {
+        Authorization: `Bearer ${AuthHandler.getLoginToken()}`
+      }
+    }
+  );
+  return response;
+}
+
   async saveDataAdaugareBancaFurnizor(nr_cont_bancar, swift, id_furnizor) {
     await this.checkLogin();
 
