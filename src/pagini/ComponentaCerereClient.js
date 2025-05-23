@@ -220,7 +220,7 @@ async formSubmit(event) {
                         <td>{new Date(cerereClient.data_cerere).toLocaleString('ro-RO')}</td>
                         <td>
                           
-                        {cerereClient.status === 0 ? (
+                        {cerereClient.status == 0 ? (
                           <>
                             <button
                               className="btn btn-block btn-warning"
