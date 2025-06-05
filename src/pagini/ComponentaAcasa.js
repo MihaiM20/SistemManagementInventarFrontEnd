@@ -69,6 +69,9 @@ class ComponentaAcasa extends React.Component {
           });
       }
 
+      listadataprofit.sort((a, b) => a.x - b.x);
+
+
       const listadatavanzari = [];
       for (let i=0; i < dateacasa.data.diagrama_vanzari.length; i++) {
           listadatavanzari.push({
@@ -76,6 +79,9 @@ class ComponentaAcasa extends React.Component {
               y: dateacasa.data.diagrama_vanzari[i].suma
           });
       }
+
+      listadatavanzari.sort((a, b) => a.x - b.x);
+
       
       this.state.DiagramaProfit = {
         culture: "ro",                     // setăm cultura română

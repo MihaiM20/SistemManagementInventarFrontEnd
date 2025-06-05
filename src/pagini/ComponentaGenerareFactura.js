@@ -59,7 +59,6 @@ class ComponentaGenerareFactura extends React.Component {
     event.preventDefault();
     this.setState({ btnMessage: 1 });
 
-    // aici luăm valorile din noul input nume_client
     const { nume_client, adresa, contact } = event.target.elements;
     const numeClient     = nume_client.value;
     const adresa_client  = adresa.value;
@@ -147,10 +146,7 @@ class ComponentaGenerareFactura extends React.Component {
       '<th>Total</th>' +
       '</tr></thead>';
     detaliiFactura += '<tbody>';
-
-    // Calcul total general
     let totalGeneral = 0;
-
     detaliiProdus.forEach((produs, idx) => {
       const linieTotal = parseFloat(produs.suma) || 0;
       totalGeneral += linieTotal;
@@ -164,19 +160,15 @@ class ComponentaGenerareFactura extends React.Component {
         `<td>${linieTotal.toFixed(2)}</td>` +
         '</tr>';
     });
-
     detaliiFactura += '</tbody>';
-    // Adăugăm footer cu total general
     detaliiFactura += '<tfoot>' +
       '<tr>' +
       '<td colspan="6" style="text-align:right"><strong>Total General</strong></td>' +
       `<td><strong>${totalGeneral.toFixed(2)}</strong></td>` +
       '</tr>' +
       '</tfoot>';
-
     detaliiFactura += '</table>';
     detaliiFactura += '</body></html>';
-
     const myWindow = window.open('', 'Factura', 'width=900,height=650,top=100,left=100');
     myWindow.document.write(detaliiFactura);
     myWindow.document.close();
@@ -425,34 +417,6 @@ ActualizareCantitate = event => {
                           </div>
                         </div>
                         </div>
-                          {/* <div className="col-lg-2">
-                            <label htmlFor={`tip_cantitate_${index}`}>Tip Cantitate:</label>
-                            <div className="form-group">
-                              <div className="form-line">
-                                <select
-                                  id={`tip_cantitate_${index}`}
-                                  name="tip_cantitate"
-                                  className="form-control"
-                                  value={produs.tip_cantitate}
-                                  onChange={e => {
-                                    const value = e.target.value;
-                                    this.setState(prev => {
-                                      const updated = prev.detaliiProdus.map((p, i) =>
-                                        i === index ? { ...p, tip_cantitate: value } : p
-                                      );
-                                      return { detaliiProdus: updated };
-                                    });
-                                  }}
-                                >
-                                  <option value="bucati">Bucăți</option>
-                                  <option value="kg">Kilograme</option>
-                                  <option value="litri">LitrI</option>
-                                  <option value="metri">Metri</option>
-                                  poţi adăuga aici alte unităţi
-                                </select>
-                              </div>
-                            </div>
-                          </div> */}
                         <div className="col-lg-2">
                     <label htmlFor="pret_unitar">Pret unitar:</label>
                         <div className="form-group">
